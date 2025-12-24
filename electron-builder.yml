@@ -38,8 +38,16 @@ linux:
 appImage:
   artifactName: ${name}-${version}.${ext}
 npmRebuild: false
-publish:
-  provider: github
-  url: https://example.com/auto-updates
+publish: false
+# publish:
+#   provider: github # 核心：指定发布到 GitHub Releases
+#   repo: electron-chrome-tabs # 你的 GitHub 仓库名（必填）
+#   owner: lbwxl # 你的 GitHub 用户名/组织名（必填）
+#   private: false # 仓库是否私有（私有仓库需配置 token）
+#   channel: latest # 更新通道（可选，默认 latest，测试可设 beta）
+#   releaseType: release # 发布类型：release（正式版）/prerelease（预发布）
+#   vPrefixedTagName: true # 标签是否带 v 前缀（如 v1.0.0，建议开启）
+#   # token: $GITHUB_TOKEN # GitHub 令牌（私有仓库/自动发布必填，通过环境变量注入）
+#   publishAutoUpdate: true # 打包后自动发布到 Releases（核心自动更新逻辑）
 electronDownload:
   mirror: https://npmmirror.com/mirrors/electron/
