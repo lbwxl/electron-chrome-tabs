@@ -2,6 +2,7 @@ import { useBoundStore } from '@renderer/store/useBoundStore'
 import { AnimatePresence, motion, Reorder } from 'framer-motion'
 import { MdAdd } from 'react-icons/md'
 import { Tab } from './Tab'
+import { DefaultPageObj } from '@renderer/utils/constant'
 
 export default function TabBar() {
   const tabs = useBoundStore((state) => state.tabs.items)
@@ -11,6 +12,8 @@ export default function TabBar() {
   const setTabs = useBoundStore((state) => state.tabs.reorder)
   const selectedTab = useBoundStore((state) => state.tabs.selectedTabId)
   const selectedTabIndex = useBoundStore((state) => state.tabs.selectedTabIndex)
+  console.log("tabs", tabs);
+  
   return (
     <div className="flex flex-row w-full flex-grow">
       <Reorder.Group
@@ -34,7 +37,9 @@ export default function TabBar() {
           <motion.button
             className="titlebar-button flex items-center justify-center hover:bg-white/5
               rounded-full h-6 w-6  transition-all duration-300 ml-2"
-            onClick={add}
+            onClick={() =>
+              add(DefaultPageObj)
+            }
             whileTap={{ scale: 0.9 }}
           >
             <MdAdd className="opacity-55 hover:opacity-100 transition-all text-white duration-300" />
@@ -44,4 +49,3 @@ export default function TabBar() {
     </div>
   )
 }
-

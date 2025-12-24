@@ -1,5 +1,6 @@
 import { TabsSlice } from '@renderer/types/tab-slice'
 import { TabInfo } from '@renderer/types/tabs'
+import { DefaultPageObj, DefaultPageTitle } from '@renderer/utils/constant'
 import { produce } from 'immer'
 import { StateCreator } from 'zustand'
 
@@ -8,25 +9,29 @@ export const createTabSlice: StateCreator<TabsSlice, [], [], TabsSlice> = (set) 
     items: [
       {
         id: 0,
-        name: 'New Tab'
+        name: DefaultPageTitle
       }
     ],
     selectedTabId: 0,
     selectedTabIndex: 0,
     initialize: async () => {
       const ids = await window.tabs.getAllTabIds()
+
       if (ids.length === 0) {
         return
       }
       const selectedTabId = await window.tabs.getSelectedTabId()
       set(
         produce((state: TabsSlice) => {
-          state.tabs.items = ids.map((id) => ({
-            id,
-            name: 'New Tab'
-          }))
+          state.tabs.items = ids.map((item) => {
+            const [id, name] = item.split(',')
+            return {
+              id: Number(id),
+              name
+            }
+          })
 
-          state.tabs.selectedTabId = selectedTabId === -1 ? ids[0] : selectedTabId
+          state.tabs.selectedTabId = selectedTabId === -1 ? state.tabs.items[0].id : selectedTabId
 
           state.tabs.selectedTabIndex = state.tabs.items.findIndex(
             (tab) => state.tabs.selectedTabId === tab.id
@@ -50,7 +55,7 @@ export const createTabSlice: StateCreator<TabsSlice, [], [], TabsSlice> = (set) 
             // If we are deleting the last tab, close it and add a new tab
             state.tabs.items.splice(0, 1)
             window.tabs.close(tab.id)
-            state.tabs.add()
+            state.tabs.add(DefaultPageObj)
             return
           }
           const index = state.tabs.items.findIndex((t) => t.id === tab.id)
@@ -72,15 +77,15 @@ export const createTabSlice: StateCreator<TabsSlice, [], [], TabsSlice> = (set) 
           window.tabs.close(tab.id)
         })
       ),
-    add: async () => {
-      const id = await window.tabs.new()
+    add: async ({ url, title }: { url?: string; title?: string } = {}) => {
+      const id = await window.tabs.new(url)
       if (id === -1) return
 
       set(
         produce((state: TabsSlice) => {
           state.tabs.items.push({
             id,
-            name: 'New Tab'
+            name: title || 'New Tab'
           })
           state.tabs.selectedTabId = id
           state.tabs.selectedTabIndex = state.tabs.items.length - 1

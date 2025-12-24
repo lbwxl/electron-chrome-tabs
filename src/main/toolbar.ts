@@ -56,7 +56,7 @@ export function createToolbar(): Promise<WebContentsView | null> {
         height: toolbarHeight
       })
     })
-
+    // toolbarView.webContents.openDevTools({ mode: 'detach' })
     toolbarView.webContents.loadURL(getRootUrl() + NavigationRoutes.toolbar)
     toolbarView.webContents.on('did-finish-load', () => {
       return resolve(toolbarView)

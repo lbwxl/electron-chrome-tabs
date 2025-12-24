@@ -1,7 +1,17 @@
-import { TabInfo } from '@renderer/types/tabs'
-import { cn } from '@renderer/utils/cn'
 import { motion, Reorder } from 'framer-motion'
 import { VscClose } from 'react-icons/vsc'
+import { clsx, type ClassValue } from 'clsx'
+import { twMerge } from 'tailwind-merge'
+
+export function cn(...inputs: ClassValue[]) {
+  return twMerge(clsx(inputs))
+}
+
+type TabInfo = {
+  id: number
+  name: string
+  mode?: string | null
+}
 
 interface Props {
   item: TabInfo
@@ -49,7 +59,7 @@ export const Tab = ({ item, onClick, onRemove, isSelected, showSeparator }: Prop
           isSelected ? 'text-primary-foreground ' : 'text-white'
         )}
         layout="position"
-      >{`${item.name} ${item.id}`}</motion.span>
+      >{`${item.name}`}</motion.span>
       <motion.div
         layout
         className="absolute top-0 bottom-0 right-[0px] flex align-center items-center justify-end

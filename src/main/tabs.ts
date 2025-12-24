@@ -13,14 +13,14 @@ let selectedTab: WebContentsView | null = null
  * Creates and loads a new tab with the root URL.
  * @returns The ID of the new tab's web contents, or -1 if creation failed
  */
-export async function addNewTab() {
+export async function addNewTab(url?: string) {
   const mainWindow = getBaseWindow()
   if (mainWindow === null) {
     return
   }
 
   // load new content here
-  const newTab = await loadTabContent(NavigationRoutes.root, { bringToFront: true })
+  const newTab = await loadTabContent(url || NavigationRoutes.webviewUrl, { bringToFront: true })
   if (newTab === null) return -1
   return newTab.webContents.id
 }
@@ -35,7 +35,7 @@ export function loadTabContent(
   { bringToFront = false }: { bringToFront?: boolean } = {}
 ): Promise<WebContentsView | null> {
   return new Promise((resolve) => {
-    const url = getRootUrl() + path
+    const url = path.startsWith('http') ? path : getRootUrl() + path
     const baseWindow = getBaseWindow()
     if (baseWindow === null) return resolve(null)
     const newContentView = new WebContentsView({
@@ -44,7 +44,6 @@ export function loadTabContent(
         sandbox: false
       }
     })
-
     newContentView.setBackgroundColor('#292524')
 
     newContentView.webContents.on('did-finish-load', () => {
@@ -178,11 +177,11 @@ export function getAllTabs(): WebContentsView[] {
  * Gets the IDs of all open tabs.
  * @returns Array of tab IDs
  */
-export function getAllTabIds(): number[] {
+export function getAllTabIds(): string[] {
   if (tabs.length === 0) {
     return []
   }
-  const ids = tabs.map((tab) => tab.webContents.id)
+  const ids = tabs.map((tab) => `${tab.webContents.id},${tab.webContents.getTitle()}`)
   return ids
 }
 
@@ -245,6 +244,11 @@ export function getSelectedTabId() {
   return selectedTab.webContents.id
 }
 
+export function getSelectedTabTitle() {
+  if (selectedTab === null) return ''
+  return selectedTab.webContents.getTitle()
+}
+
 /**
  * Reorders tabs based on an array of tab IDs.
  * @param ids Array of tab IDs in the desired order
@@ -272,7 +276,8 @@ export function saveTabs() {
     const idx = url.indexOf('#')
     return idx === -1 ? '/' : url.substring(idx + 1)
   })
-
+  console.log("tabUrls", tabUrls);
+  
   setTabs(tabUrls)
 }
 
@@ -283,16 +288,17 @@ export function saveTabs() {
  * @returns Promise resolving to the selected tab's WebContentsView or null
  */
 export async function restoreTabs({
-  restore = true
+  restore = true,
 }: {
   restore?: boolean
-} = {}): Promise<WebContentsView | null> {
+} = {}): Promise<WebContentsView | null> {  
   if (!restore) {
-    return loadTabContent(NavigationRoutes.root)
+    return loadTabContent(NavigationRoutes.webviewUrl)
   }
 
-  let lastSessionTabs = getTabs()
+  const lastSessionTabs = getTabs()
   let selectedTabIndex = getSelected()
+
 
   if (lastSessionTabs !== null && lastSessionTabs.length > 0) {
     if (selectedTabIndex < 0 || selectedTabIndex >= lastSessionTabs.length) {
@@ -309,7 +315,7 @@ export async function restoreTabs({
   }
 
   if (selectedTab === null) {
-    selectedTab = await loadTabContent(NavigationRoutes.root)
+    selectedTab = await loadTabContent(NavigationRoutes.webviewUrl)
   }
 
   return selectedTab

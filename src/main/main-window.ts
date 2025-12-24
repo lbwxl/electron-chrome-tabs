@@ -32,7 +32,7 @@ export async function initializeMainWindow() {
   setupMainWindowEventHandlers()
 
   const toolbar = await createToolbar()
-  const mainContent = await restoreTabs()
+  const mainContent = await restoreTabs({ restore: true })
   if (mainContent === null || toolbar === null) {
     console.error('Failed to load toolbar or mainContent')
     return

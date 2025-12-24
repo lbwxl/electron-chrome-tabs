@@ -5,5 +5,6 @@
 export const NavigationRoutes = {
   root: '/',
   about: '/about',
-  toolbar: '/toolbar'
+  toolbar: '/#/Toolbar',
+  webviewUrl: 'http://192.168.1.72:1002'
 }

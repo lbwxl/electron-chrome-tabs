@@ -33,7 +33,7 @@ export interface TabsSlice {
       /**
        * Creates a new tab.
        */
-      add: () => void;
+      add: ({ url, title }: { url?: string; title?: string }) => void;
   
       /**
        * Reorder tabs in the order of the given TabInfo array.
