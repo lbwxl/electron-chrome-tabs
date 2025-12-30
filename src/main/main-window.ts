@@ -19,7 +19,7 @@ export async function initializeMainWindow() {
     autoHideMenuBar: true,
     titleBarOverlay: true,
     frame: false,
-    titleBarStyle: 'hiddenInset',
+    titleBarStyle: 'hidden',
     trafficLightPosition: {
       x: 9,
       y: 9
